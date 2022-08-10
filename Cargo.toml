@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "demo_macros",
+    "hello_macros",
+]
