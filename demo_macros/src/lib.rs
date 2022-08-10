@@ -1,8 +1,6 @@
 extern crate proc_macro;
 mod util;
 
-use quote::quote;
-use syn::PathArguments::None;
 use util::*;
 use proc_macro::TokenStream;
 use std::str::FromStr;
@@ -17,50 +15,25 @@ pub fn cache_aop(_attr: TokenStream, _input: TokenStream) -> TokenStream {
     println!("attr_str : {}", attr_str);
     println!("input_str : {}", input_str);
     println!("param : {:?}", param);
-    let command = match param.get("command") {
-        Some(get) if get.to_lowercase() == "get" => {
-            match param.get("key") {
-                Some(k) => Some(Command::GET(Some(k.clone()))),
-                None => {
-                    println!("GET command has no key!");
-                    None
-                },
-            }
+    let param_ref = &param;
 
-        },
-        Some(list) if list.to_lowercase() == "list" => {
-            match param.get("key") {
-                Some(k) => Some(Command::LIST(Some(k.clone()))),
-                None => {
-                    println!("LIST command has no key!");
-                    None
-                },
-            }
-        },
-        Some(hash) if hash.to_lowercase() == "hash" => {
-            let k = match param.get("key") {
-                Some(k) => Some(k.clone()),
-                None => {
-                    println!("HASH command has no key!");
-                    None
-                },
-            };
-            let f = match param.get("field") {
-                Some(f) => Some(f.clone()),
-                None => {
-                    println!("HASH command has no field!");
-                    None
-                },
-            };
-            match (k,v) {
-                (Some(_k), Some(_f)) => Some(Command::HASH(Some(_k), Some(_f))),
-                None => None
-            }
-        },
-        _ => panic!("unknown command!")
-    };
+    let command_op = Command::from(param_ref);
 
-    let result_token_stream = proc_macro2::TokenStream::from_str(&input_str).unwrap();
+    let command = command_op.unwrap();
+    let _k = (&command).get_key();
+    // let code_str = format!(
+    //     "pub fn aop() \n{{let v_op = container.get(\"{key}\"); println!(\"{{}}\", v_op.unwrap());}}    \n{src_code}",
+    //     key = _k,
+    //     src_code = input_str
+    // );
+
+    let code_str = format!(
+        "fn aop() \n{{println!(\"{{}}\", {p1});}}    \n{src_code}",
+        p1 = "1",
+        src_code = input_str
+    );
+    println!("code_str : \n{}", code_str);
+    let result_token_stream = proc_macro2::TokenStream::from_str(&code_str).unwrap();
     // return TokenStream::from(quote!{fn dummy(){}});
     return TokenStream::from(result_token_stream);
 }

@@ -1,4 +1,6 @@
 extern crate demo_macros;
+
+use std::collections::HashMap;
 use demo_macros::cache_aop;
 
 #[derive(Debug)]
@@ -15,6 +17,7 @@ fn it_works(param: Param) {
 
 
 fn main() {
+    let container = HashMap::<String, String>::new();
     it_works(Param {
         pa: "参数-1".to_string(),
         pb: "参数-2".to_string()
