@@ -1,12 +1,12 @@
 use std::{collections::HashMap};
 
-enum Command {
-    GET(String),
-    LIST(String),
+pub enum Command {
+    GET(Option<String>),
+    LIST(Option<String>),
     HASH(Option<String>, Option<String>)
 }
 
-fn attr_split_to_map(attr_str: &str) -> HashMap<String, String> {
+pub fn attr_split_to_map(attr_str: &str) -> HashMap<String, String> {
     attr_str
         .replace("/", "")
         .replace('\n', "")
