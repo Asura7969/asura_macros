@@ -16,25 +16,20 @@ pub fn cache_aop(_attr: TokenStream, _input: TokenStream) -> TokenStream {
     println!("input_str : {}", input_str);
     println!("param : {:?}", param);
     let param_ref = &param;
-
     let command_op = Command::from(param_ref);
-
     let command = command_op.unwrap();
     let _k = (&command).get_key();
-    // let code_str = format!(
-    //     "pub fn aop() \n{{let v_op = container.get(\"{key}\"); println!(\"{{}}\", v_op.unwrap());}}    \n{src_code}",
-    //     key = _k,
-    //     src_code = input_str
-    // );
-
+    let start_pos = input_str.find("{").unwrap() + 1;
+    let mut expand_str = _input.clone().to_string();
     let code_str = format!(
-        "fn aop() \n{{println!(\"{{}}\", {p1});}}    \n{src_code}",
-        p1 = "1",
-        src_code = input_str
+        "println!(\"{{}}\", \"{p1}\");    \n",
+        p1 = "打印-宏扩展代码",
     );
-    println!("code_str : \n{}", code_str);
-    let result_token_stream = proc_macro2::TokenStream::from_str(&code_str).unwrap();
-    // return TokenStream::from(quote!{fn dummy(){}});
+
+    expand_str.insert_str(start_pos, code_str.as_str());
+
+    println!("code_str : \n{}", expand_str);
+    let result_token_stream = proc_macro2::TokenStream::from_str(&expand_str).unwrap();
     return TokenStream::from(result_token_stream);
 }
 
